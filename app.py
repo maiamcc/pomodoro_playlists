@@ -2,20 +2,29 @@
 
 from auth import new_client
 
+from track import tracks_from_album
+
+# Anticipated args:
+#   - work music (album or playlist identifier)
+#   - break music (album or playlist identifier)
+#   - optional: target playlist id (otherwise, create a new one)
+#   - optional: preserve order = t/f (if true, we try to create a pomo
+#       playlist by keeping tracks in order from 'work' and 'break' music;
+#       otherwise we just grab tracks of appropriate length from wherever
+#   - optional: work interval; break interval; num cycles before long break; etc.
+
 
 def main():
-    birdy_uri = 'spotify:artist:2WX2uTcsvV5OnS0inACecP'
-    spotify = new_client()
+    # album url: bach preludes and fugues
+    work_music_identifier = 'https://open.spotify.com/album/66zilH1HJzRLEorco0u6bS?si=SJ4fATSBSN6LbhDkLQ2tbw'
 
-    results = spotify.artist_albums(birdy_uri, album_type='album')
-    albums = results['items']
-    while results['next']:
-        results = spotify.next(results)
-        albums.extend(results['items'])
+    # album url: "chill techno transformation"
+    break_music_identifier = 'https://open.spotify.com/album/29Tt0fcqRrfsW1OCGB7lNH?si=V8bmcM6CQE2DP0_cUCdjsA'
 
-    for album in albums:
-        print(album['name'])
+    cli = new_client()
 
+    tracks = tracks_from_album(cli, work_music_identifier)
+    me = cli.me()
 
 if __name__ == '__main__':
     main()
