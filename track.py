@@ -2,9 +2,11 @@ import typing as t
 
 import spotipy
 
+Uri = str
+
 
 class Track:
-    def __init__(self, duration_ms: int, uri: str):
+    def __init__(self, duration_ms: int, uri: Uri):
         self.duration_ms = duration_ms  # todo: store as time.duration
         self.uri = uri
 
@@ -17,8 +19,13 @@ class Track:
 
 
 # TODO: subclass spotipy client?
-# TODO: get tracks from playlists as well, maybe artists?
-def tracks_from_album(cli: spotipy.Spotify, album_identifier: str) -> t.List[Track]:
+def get_tracks(cli, identifier: str) -> t.List[Track]:
+    # TODO: this currently only supports albums—
+    #   get tracks from playlists as well, maybe artists?
+    return _tracks_from_album(cli, identifier)
+
+
+def _tracks_from_album(cli: spotipy.Spotify, album_identifier: str) -> t.List[Track]:
     # NB: `album_identifier` may be the album ID, URI or URL
     results = cli.album_tracks(album_identifier)
     tracks = results['items']

@@ -2,8 +2,10 @@
 
 from auth import new_client
 
-from track import tracks_from_album
+from playlist import new_playlist
+from track import get_tracks
 
+POMO_ROUNDS = 4
 # Anticipated args:
 #   - work music (album or playlist identifier)
 #   - break music (album or playlist identifier)
@@ -23,8 +25,22 @@ def main():
 
     cli = new_client()
 
-    tracks = tracks_from_album(cli, work_music_identifier)
-    me = cli.me()
+    work_tracks = get_tracks(cli, work_music_identifier)
+    break_tracks = get_tracks(cli, break_music_identifier)
+
+    # TODO: authenticate, somehow
+
+    playlist = new_playlist(cli)
+    work_i = 0
+    break_i = 0
+    for rnd in range(POMO_ROUNDS):
+        playlist.add_tracks(cli, [t.uri for t in work_tracks[work_i:work_i+5]])
+        work_i += 6
+        playlist.add_tracks(cli, [t.uri for t in break_tracks[break_i:break_i+2]])
+        break_i += 3
+
+    print(f'made u a nice playlist, champ! {playlist.url}')
+
 
 if __name__ == '__main__':
     main()
