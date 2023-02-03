@@ -3,9 +3,15 @@
 from auth import new_client
 
 from playlist import new_playlist
-from track import get_tracks
+from track import get_tracks, bucket_tracks_by_duration
 
 POMO_ROUNDS = 4
+WORK_DUR_MINS = 25
+BREAK_DUR_MINS = 5
+
+WORK_DUR_SECS = WORK_DUR_MINS * 60
+BREAK_DUR_SECS = BREAK_DUR_MINS * 60
+
 # Anticipated args:
 #   - work music (album or playlist identifier)
 #   - break music (album or playlist identifier)
@@ -28,16 +34,18 @@ def main():
     work_tracks = get_tracks(cli, work_music_identifier)
     break_tracks = get_tracks(cli, break_music_identifier)
 
+    work_buckets = bucket_tracks_by_duration(work_tracks, WORK_DUR_SECS)
+    break_buckets = bucket_tracks_by_duration(break_tracks, BREAK_DUR_SECS)
+
     # TODO: authenticate, somehow
 
     playlist = new_playlist(cli)
-    work_i = 0
-    break_i = 0
-    for rnd in range(POMO_ROUNDS):
-        playlist.add_tracks(cli, [t.uri for t in work_tracks[work_i:work_i+5]])
-        work_i += 6
-        playlist.add_tracks(cli, [t.uri for t in break_tracks[break_i:break_i+2]])
-        break_i += 3
+    for i in range(POMO_ROUNDS):
+        if i < len(work_buckets) and i < len(break_buckets):
+            playlist.add_tracks(cli, [t.uri for t in work_buckets[i]])
+            playlist.add_tracks(cli, [t.uri for t in break_buckets[i]])
+        else:
+            print('not enough groups of stuff to keep going, sorry :-/')
 
     print(f'made u a nice playlist, champ! {playlist.url}')
 
