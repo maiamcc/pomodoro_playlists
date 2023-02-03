@@ -62,7 +62,7 @@ def _tracks_from_results(cli: spotipy.Spotify, results_dict: dict) -> List[Track
 
 
 # TODO: pass margin? is there a way to target a certain bucket value with a margin over?
-def bucket_tracks_by_duration(tracks: Track, duration_secs: int) -> List[List[Track]]:
+def bucket_tracks_by_duration(tracks: List[Track], duration_secs: int) -> List[List[Track]]:
     return binpacking.to_constant_volume(tracks, duration_secs, key=lambda t: t.duration_secs)
 
 

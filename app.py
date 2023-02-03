@@ -1,25 +1,27 @@
 #! /usr/bin/env python
+import math
 
 from auth import new_client
-
 from playlist import new_playlist
 from track import get_tracks, bucket_tracks_by_duration
 
 POMO_ROUNDS = 4
 WORK_DUR_MINS = 25
-BREAK_DUR_MINS = 5
+WORK_FLEX_MINS = 5   # amt by which we're willing to go over work duration
+BREAK_DUR_MINS = 6
+BREAK_FLEX_MINS = 2.5  # amt by which we're willing to go over break duration
 
-WORK_DUR_SECS = WORK_DUR_MINS * 60
-BREAK_DUR_SECS = BREAK_DUR_MINS * 60
+WORK_DUR_SECS = math.floor((WORK_DUR_MINS + WORK_FLEX_MINS) * 60)
+BREAK_DUR_SECS = math.floor((BREAK_DUR_MINS + BREAK_FLEX_MINS) * 60)
 
 # Anticipated args:
 #   - work music (album or playlist identifier)
 #   - break music (album or playlist identifier)
+#   - optional: work interval; break interval; num cycles before long break; etc.
 #   - optional: target playlist id (otherwise, create a new one)
 #   - optional: preserve order = t/f (if true, we try to create a pomo
 #       playlist by keeping tracks in order from 'work' and 'break' music;
 #       otherwise we just grab tracks of appropriate length from wherever
-#   - optional: work interval; break interval; num cycles before long break; etc.
 
 
 def main():
