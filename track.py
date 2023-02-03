@@ -27,10 +27,13 @@ def get_tracks(cli, url: str) -> List[Track]:
         raise ValueError(f'URL f{url} doesn\'t seem to be a valid Spotify url (should contain "open.spotify.com/"')
 
     if 'open.spotify.com/playlist' in url:
+        print(f'- getting tracks for playlist URL {url}')
         return _tracks_from_playlist(cli, url)
     elif 'open.spotify.com/album' in url:
+        print(f'- getting tracks for album URL {url}')
         return _tracks_from_album(cli, url)
     elif 'open.spotify.com/artist' in url:
+        print(f'- getting tracks for artist URL {url}')
         return _tracks_from_artist(cli, url)
     else:
         raise ValueError(f'Unrecognized Spotify URL. This program currently only '

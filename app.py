@@ -89,6 +89,8 @@ def main():
 
     playlist = assemble_playlist(cli, args.cycles, args.rounds, args.breaks_between,
                                  work_buckets, break_buckets, args.title)
+
+    print()
     print(f'made u a nice playlist, champ! {playlist.url}')
     print('Happy 🍅!!')
 

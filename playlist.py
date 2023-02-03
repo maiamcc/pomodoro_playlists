@@ -37,22 +37,24 @@ def assemble_playlist(cli: spotipy.Spotify, max_cycles: int, rounds_per_cycle: i
                       work_buckets: List[List[track.Track]], break_buckets: List[List[track.Track]],
                       playlist_name: Optional[str] = None) -> Playlist:
 
+    print(f'- creating your new playlist')
     playlist = new_playlist(cli, playlist_name=playlist_name)
 
+    print(f'- populating your playlist')
     for _ in range(max_cycles):
         for i in range(rounds_per_cycle):
             if work_buckets and break_buckets:  # if we still have tracks available
                 playlist.add_tracks(cli, [t.uri for t in work_buckets.pop()])
                 playlist.add_tracks(cli, [t.uri for t in break_buckets.pop()])
             else:
-                print('not enough groups of stuff to keep going, sorry :-/')
+                print('- not enough groups of stuff to keep going, sorry :-/')
                 return playlist
 
         for i in range(breaks_between_cycles - 1):  # nb: already added one break at the end of the previous loop
             if break_buckets:
                 playlist.add_tracks(cli, [t.uri for t in break_buckets.pop()])
             else:
-                print('not enough groups of stuff to keep going, sorry :-/')
+                print('- not enough groups of stuff to keep going, sorry :-/')
                 return playlist
 
     return playlist
