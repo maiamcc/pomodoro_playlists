@@ -36,9 +36,8 @@ def main():
     work_buckets = bucket_tracks_by_duration(work_tracks, WORK_DUR_SECS)
     break_buckets = bucket_tracks_by_duration(break_tracks, BREAK_DUR_SECS)
 
-    # TODO: authenticate, somehow
-
     playlist = new_playlist(cli)
+
     for i in range(POMO_ROUNDS):
         if i < len(work_buckets) and i < len(break_buckets):
             playlist.add_tracks(cli, [t.uri for t in work_buckets[i]])

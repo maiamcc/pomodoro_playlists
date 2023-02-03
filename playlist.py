@@ -4,12 +4,7 @@ import typing as t
 import spotipy
 
 import track
-
-# there should be a way to get the current user from the client but it's throwing 401 Unauthorized
-# and I don't know why, so hardcode me for now.
-
-
-USER = 'maianess'
+import user
 
 
 class Playlist:
@@ -34,5 +29,5 @@ def new_playlist(cli: spotipy.Spotify, playlist_name: t.Optional[str] = None) ->
     # TODO: description maybe?
     if playlist_name is None:
         playlist_name = f'Awesome Playlist {datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}'
-    resp = cli.user_playlist_create(USER, playlist_name)
+    resp = cli.user_playlist_create(user.current_user(cli), playlist_name)
     return Playlist.from_dict(resp)
