@@ -27,12 +27,12 @@ def argument_parser():
     parser.add_argument(
         'work_music',
         type=str,
-        help='url for album / playlist to use as work music'
+        help='url for album / playlist / artist to use as work music'
     )
     parser.add_argument(
         'break_music',
         type=str,
-        help='url for album / playlist to use as break music'
+        help='url for album / playlist / artist to use as break music'
     )
     parser.add_argument(
         '--title', '-t',

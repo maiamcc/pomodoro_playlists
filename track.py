@@ -7,16 +7,18 @@ Uri = str
 
 
 class Track:
-    def __init__(self, duration_ms: int, uri: Uri):
+    def __init__(self, name: str, duration_ms: int, uri: Uri):
+        self.name = name
         self.duration_secs = duration_ms / 1000  # todo: store as time.duration
         self.uri = uri
 
     @classmethod
     def from_dict(cls, d: dict) -> 'Track':
+        name = d['name']
         duration_ms = d['duration_ms']
         uri = d['uri']
 
-        return Track(duration_ms, uri)
+        return Track(name, duration_ms, uri)
 
 
 # TODO: subclass spotipy client?
@@ -28,12 +30,17 @@ def get_tracks(cli, url: str) -> List[Track]:
         return _tracks_from_playlist(cli, url)
     elif 'open.spotify.com/album' in url:
         return _tracks_from_album(cli, url)
+    elif 'open.spotify.com/artist' in url:
+        return _tracks_from_artist(cli, url)
     else:
-        raise ValueError(f'Unrecognized Spotify URL. This program currently only supports playlists ("/playlist/...") and albums ("/album/...")')
+        raise ValueError(f'Unrecognized Spotify URL. This program currently only '
+                         f'supports playlists ("/playlist/..."), albums ("/album/..."), '
+                         f'and artists ("/artist/...")')
 
 
-def _tracks_from_album(cli: spotipy.Spotify, album_url: str) -> List[Track]:
-    results = cli.album_tracks(album_url)
+def _tracks_from_album(cli: spotipy.Spotify, album_id: str) -> List[Track]:
+    # `album_id` may be an ID, URI, or URL
+    results = cli.album_tracks(album_id)
     tracks = results['items']
     while results['next']:
         results = cli.next(results)
@@ -42,14 +49,33 @@ def _tracks_from_album(cli: spotipy.Spotify, album_url: str) -> List[Track]:
     return [Track.from_dict(track) for track in tracks]
 
 
-def _tracks_from_playlist(cli: spotipy.Spotify, playlist_url: str) -> List[Track]:
-    results = cli.playlist_items(playlist_url)
+def _tracks_from_playlist(cli: spotipy.Spotify, playlist_id: str) -> List[Track]:
+    # `playlist_id` may be an ID, URI, or URL
+    results = cli.playlist_items(playlist_id)
     tracks = [item['track'] for item in results['items']]
     while results['next']:
         results = cli.next(results)
         tracks.extend([item['track'] for item in results['items']])
 
     return [Track.from_dict(track) for track in tracks]
+
+
+def _tracks_from_artist(cli: spotipy.Spotify, artist_id: str) -> List[Track]:
+    # `artist_id` may be an ID, URI, or URL
+    results = cli.artist_albums(artist_id)
+    album_uris = [item['uri'] for item in results['items']]
+    # hmm, do I really want to get allll the tracks for allll the albums??
+    while results['next']:
+        results = cli.next(results)
+        album_uris.extend([item['uri'] for item in results['items']])
+
+    tracks = []
+    for album_uri in album_uris:
+        tracks.extend(_tracks_from_album(cli, album_uri))
+
+    # dedupe by track name
+    dedupe_dict = {t.name: t for t in tracks}
+    return list(dedupe_dict.values())
 
 
 def _tracks_from_results(cli: spotipy.Spotify, results_dict: dict) -> List[Track]:
