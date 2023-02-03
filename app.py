@@ -17,6 +17,7 @@ BREAK_DUR_SECS = math.floor((BREAK_DUR_MINS + BREAK_FLEX_MINS) * 60)
 # Anticipated args:
 #   - work music (album or playlist identifier)
 #   - break music (album or playlist identifier)
+#   - optional: playlist name
 #   - optional: work interval; break interval; num cycles before long break; etc.
 #   - optional: target playlist id (otherwise, create a new one)
 #   - optional: preserve order = t/f (if true, we try to create a pomo
@@ -46,6 +47,7 @@ def main():
             print('not enough groups of stuff to keep going, sorry :-/')
 
     print(f'made u a nice playlist, champ! {playlist.url}')
+    print('Happy 🍅!!')
 
 
 if __name__ == '__main__':
