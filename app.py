@@ -9,8 +9,9 @@ from track import get_tracks, bucket_tracks_by_duration
 
 DEFAULT_CYCLES = 5
 DEFAULT_ROUNDS_PER_CYCLE = 4
+DEFAULT_BREAKS_BETWEEN_CYCLES = 3
 DEFAULT_WORK_DUR_MINS = 25
-DEFAULT_BREAK_DUR_MINS = 6
+DEFAULT_BREAK_DUR_MINS = 5
 WORK_FLEX_MINS = 5   # amt by which we're willing to go over work duration
 BREAK_FLEX_MINS = 2  # amt by which we're willing to go over break duration
 
@@ -64,6 +65,12 @@ def argument_parser():
         help='maximum number of cycles in a playlist (though playlist length is '
              'also constrained by amount of available material)'
     )
+    parser.add_argument(
+        '--breaks-between', '-bb',
+        type=int,
+        default=DEFAULT_BREAKS_BETWEEN_CYCLES,
+        help='number of breaks between cycles (basically this determines the length of a long break)'
+    )
 
     return parser
 
@@ -80,7 +87,8 @@ def main():
     work_buckets = bucket_tracks_by_duration(work_tracks, args.work_mins, WORK_FLEX_MINS)
     break_buckets = bucket_tracks_by_duration(break_tracks, args.break_mins, BREAK_FLEX_MINS)
 
-    playlist = assemble_playlist(cli, args.cycles, args.rounds, work_buckets, break_buckets, args.title)
+    playlist = assemble_playlist(cli, args.cycles, args.rounds, args.breaks_between,
+                                 work_buckets, break_buckets, args.title)
     print(f'made u a nice playlist, champ! {playlist.url}')
     print('Happy 🍅!!')
 
