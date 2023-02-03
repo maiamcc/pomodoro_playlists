@@ -17,6 +17,7 @@ BREAK_FLEX_MINS = 2  # amt by which we're willing to go over break duration
 
 # Possible args for future:
 #   - optional: target playlist id (otherwise, create a new one)
+#   - optional: flex_mins configurable
 #   - optional: preserve order = t/f (if true, we try to create a pomo
 #       playlist by keeping tracks in order from 'work' and 'break' music;
 #       otherwise we just grab tracks of appropriate length from wherever
