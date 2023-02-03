@@ -1,5 +1,5 @@
 from datetime import datetime
-import typing as t
+from typing import List, Optional
 
 import spotipy
 
@@ -21,13 +21,31 @@ class Playlist:
 
         return Playlist(name, id, uri)
 
-    def add_tracks(self, cli: spotipy.Spotify, tracks: t.List[track.Uri]):
+    def add_tracks(self, cli: spotipy.Spotify, tracks: List[track.Uri]):
         cli.playlist_add_items(self.uri, tracks)
 
 
-def new_playlist(cli: spotipy.Spotify, playlist_name: t.Optional[str] = None) -> Playlist:
+def new_playlist(cli: spotipy.Spotify, playlist_name: Optional[str] = None) -> Playlist:
     # TODO: description maybe?
     if playlist_name is None:
         playlist_name = f'Awesome Playlist {datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}'
     resp = cli.user_playlist_create(user.current_user(cli), playlist_name)
     return Playlist.from_dict(resp)
+
+
+def assemble_playlist(cli: spotipy.Spotify, max_cycles: int, rounds_per_cycle: int,
+                      work_buckets: List[List[track.Track]], break_buckets: List[List[track.Track]],
+                      playlist_name: Optional[str] = None) -> Playlist:
+
+    playlist = new_playlist(cli, playlist_name=playlist_name)
+
+    for _ in range(max_cycles):
+        for i in range(rounds_per_cycle):
+            if work_buckets and break_buckets:  # if we still have tracks available
+                playlist.add_tracks(cli, [t.uri for t in work_buckets.pop()])
+                playlist.add_tracks(cli, [t.uri for t in break_buckets.pop()])
+            else:
+                print('not enough groups of stuff to keep going, sorry :-/')
+                return playlist
+
+    return playlist
