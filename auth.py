@@ -1,7 +1,7 @@
 import os
 
 import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
+from spotipy.oauth2 import SpotifyOAuth
 
 ENVIRON_KEY_CLIENT_ID = 'SPOTIFY_CLIENT_ID'
 ENVIRON_KEY_CLIENT_SECRET = 'SPOTIFY_CLIENT_SECRET'

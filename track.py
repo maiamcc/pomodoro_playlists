@@ -13,26 +13,50 @@ class Track:
 
     @classmethod
     def from_dict(cls, d: dict) -> 'Track':
-        duration_ms = d.get('duration_ms')
-        uri = d.get('uri')
+        duration_ms = d['duration_ms']
+        uri = d['uri']
 
         return Track(duration_ms, uri)
 
 
 # TODO: subclass spotipy client?
-def get_tracks(cli, identifier: str) -> List[Track]:
-    # TODO: this currently only supports albums—
-    #   get tracks from playlists as well, maybe artists?
-    return _tracks_from_album(cli, identifier)
+def get_tracks(cli, url: str) -> List[Track]:
+    if 'open.spotify.com/' not in url:
+        raise ValueError(f'URL f{url} doesn\'t seem to be a valid Spotify url (should contain "open.spotify.com/"')
+
+    if 'open.spotify.com/playlist' in url:
+        return _tracks_from_playlist(cli, url)
+    elif 'open.spotify.com/album' in url:
+        return _tracks_from_album(cli, url)
+    else:
+        raise ValueError(f'Unrecognized Spotify URL. This program currently only supports playlists ("/playlist/...") and albums ("/album/...")')
 
 
-def _tracks_from_album(cli: spotipy.Spotify, album_identifier: str) -> List[Track]:
-    # NB: `album_identifier` may be the album ID, URI or URL
-    results = cli.album_tracks(album_identifier)
+def _tracks_from_album(cli: spotipy.Spotify, album_url: str) -> List[Track]:
+    results = cli.album_tracks(album_url)
     tracks = results['items']
     while results['next']:
         results = cli.next(results)
         tracks.extend(results['items'])
+
+    return [Track.from_dict(track) for track in tracks]
+
+
+def _tracks_from_playlist(cli: spotipy.Spotify, playlist_url: str) -> List[Track]:
+    results = cli.playlist_items(playlist_url)
+    tracks = [item['track'] for item in results['items']]
+    while results['next']:
+        results = cli.next(results)
+        tracks.extend([item['track'] for item in results['items']])
+
+    return [Track.from_dict(track) for track in tracks]
+
+
+def _tracks_from_results(cli: spotipy.Spotify, results_dict: dict) -> List[Track]:
+    tracks = results_dict['items']
+    while results_dict['next']:
+        results_dict = cli.next(results_dict)
+        tracks.extend(results_dict['items'])
 
     return [Track.from_dict(track) for track in tracks]
 

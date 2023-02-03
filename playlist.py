@@ -20,9 +20,9 @@ class Playlist:
 
     @classmethod
     def from_dict(cls, d: dict) -> 'Playlist':
-        name = d.get('name')
-        id = d.get('id')
-        uri = d.get('uri')
+        name = d['name']
+        id = d['id']
+        uri = d['uri']
 
         return Playlist(name, id, uri)
 

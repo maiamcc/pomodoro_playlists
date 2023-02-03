@@ -23,10 +23,7 @@ BREAK_DUR_SECS = BREAK_DUR_MINS * 60
 
 
 def main():
-    # album url: bach preludes and fugues
-    work_music_identifier = 'https://open.spotify.com/album/66zilH1HJzRLEorco0u6bS?si=SJ4fATSBSN6LbhDkLQ2tbw'
-
-    # album url: "chill techno transformation"
+    work_music_identifier = 'https://open.spotify.com/playlist/2MyJEE4F1Xo4nw4WBnfwiP'
     break_music_identifier = 'https://open.spotify.com/album/29Tt0fcqRrfsW1OCGB7lNH?si=V8bmcM6CQE2DP0_cUCdjsA'
 
     cli = new_client()
